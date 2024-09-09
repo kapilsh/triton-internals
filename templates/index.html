@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triton MLIR Reader</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/github-dark.min.css">
+    <style>
+        /* Make the table responsive */
+        #table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        /* Make the code blocks wrap */
+        code {
+            white-space: pre-wrap;
+        }
+
+        #logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+        }
+
+        /* Make the container fit the screen horizontally */
+        .container {
+            max-width: 100%;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><img id="logo" src="https://cdn.openai.com/triton/assets/triton-logo.png" alt="Triton Logo"> Triton MLIR
+            Reader</h1>
+        <select id="stage-select" class="form-control">
+            {% for stage in stages %}
+            <option value="{{ stage }}">{{ stage }}</option>
+            {% endfor %}
+        </select>
+        <div id="table-container"></div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#stage-select').change(function () {
+                    var stage = $(this).val();
+                    console.log('Dropdown changed to:', stage);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/update_table',
+                        data: { 'stage': stage },
+                        success: function (data) {
+                            console.log('Received data from server:', data);
+                            $('#table-container').html(data.table);
+                            hljs.highlightAll();
+                        },
+                        error: function (xhr, status, error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                });
+                // Trigger the change event to load the initial table
+                $('#stage-select').trigger('change');
+            });
+        </script>
+    </div>
+</body>
+
+</html>
